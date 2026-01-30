@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>skazzah</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0a0e27;
+            color: #00ff88;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            text-align: center;
+            z-index: 1;
+            padding: 2rem;
+            max-width: 800px;
+        }
+
+        h1 {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 20px #00ff88;
+            animation: flicker 3s infinite alternate;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.8;
+        }
+
+        .terminal {
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid #00ff88;
+            border-radius: 8px;
+            padding: 2rem;
+            margin: 2rem auto;
+            max-width: 600px;
+            text-align: left;
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.3);
+        }
+
+        .terminal-line {
+            margin: 0.5rem 0;
+            opacity: 0;
+            animation: fadeIn 0.5s forwards;
+        }
+
+        .terminal-line:nth-child(1) { animation-delay: 0.5s; }
+        .terminal-line:nth-child(2) { animation-delay: 1s; }
+        .terminal-line:nth-child(3) { animation-delay: 1.5s; }
+        .terminal-line:nth-child(4) { animation-delay: 2s; }
+        .terminal-line:nth-child(5) { animation-delay: 2.5s; }
+
+        .prompt {
+            color: #00ffff;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            height: 20px;
+            background: #00ff88;
+            animation: blink 1s infinite;
+            margin-left: 5px;
+        }
+
+        .status {
+            margin-top: 3rem;
+            font-size: 1.5rem;
+            color: #ffaa00;
+            animation: pulse 2s infinite;
+        }
+
+        .links {
+            margin-top: 2rem;
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .link {
+            color: #00ff88;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border: 1px solid #00ff88;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+
+        .link:hover {
+            background: #00ff88;
+            color: #0a0e27;
+            box-shadow: 0 0 20px #00ff88;
+        }
+
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        @keyframes blink {
+            0%, 49% { opacity: 1; }
+            50%, 100% { opacity: 0; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            .terminal {
+                padding: 1rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas class="matrix-bg" id="matrix"></canvas>
+    
+    <div class="container">
+        <h1>skazzah</h1>
+        <div class="subtitle">// building • securing • automating</div>
+        
+        <div class="terminal">
+            <div class="terminal-line"><span class="prompt">$</span> whoami</div>
+            <div class="terminal-line">skazzah</div>
+            <div class="terminal-line"><span class="prompt">$</span> cat /etc/interests</div>
+            <div class="terminal-line">infrastructure | compliance | AI | security</div>
+            <div class="terminal-line"><span class="prompt">$</span> <span class="cursor"></span></div>
+        </div>
+
+        <div class="status">[ MORE INFO COMING SOON ]</div>
+
+        <!-- Uncomment and customize these links when ready
+        <div class="links">
+            <a href="#" class="link">github</a>
+            <a href="#" class="link">twitter</a>
+            <a href="#" class="link">linkedin</a>
+        </div>
+        -->
+    </div>
+
+    <script>
+        // Matrix rain effect
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+        const fontSize = 14;
+        const columns = canvas.width / fontSize;
+        const drops = Array(Math.floor(columns)).fill(1);
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(10, 14, 39, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#00ff88';
+            ctx.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = chars[Math.floor(Math.random() * chars.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+
+        setInterval(drawMatrix, 50);
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html>
