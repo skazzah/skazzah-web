@@ -63,6 +63,8 @@
             max-width: 600px;
             text-align: left;
             box-shadow: 0 0 30px rgba(0, 255, 136, 0.3);
+            position: relative;
+            overflow: hidden;
         }
 
         .terminal-line {
@@ -139,6 +141,86 @@
             50% { opacity: 0.5; }
         }
 
+        .easter-egg {
+            position: absolute;
+            bottom: 30px;
+            right: -22px;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: all 0.4s ease;
+            z-index: 1;
+        }
+
+        .easter-egg:hover {
+            opacity: 1;
+            right: -8px;
+            transform: rotate(-3deg);
+        }
+
+        .mini-robot-head {
+            width: 30px;
+            height: 30px;
+            background: #00ff88;
+            border-radius: 4px;
+            position: relative;
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+        }
+
+        .mini-antenna {
+            width: 2px;
+            height: 8px;
+            background: #00ff88;
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .mini-antenna-ball {
+            width: 4px;
+            height: 4px;
+            background: #ffaa00;
+            border-radius: 50%;
+            position: absolute;
+            top: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: blink 1s infinite;
+        }
+
+        .mini-eye {
+            width: 5px;
+            height: 5px;
+            background: #0a0e27;
+            border-radius: 50%;
+            position: absolute;
+            top: 8px;
+        }
+
+        .mini-eye.left { left: 6px; }
+        .mini-eye.right { right: 6px; }
+
+        .mini-mouth {
+            width: 10px;
+            height: 5px;
+            border: 1px solid #0a0e27;
+            border-top: none;
+            border-radius: 0 0 5px 5px;
+            position: absolute;
+            bottom: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        @media (max-width: 768px) {
+            .easter-egg {
+                bottom: 15px;
+                right: 15px;
+            }
+        }
+
         @media (max-width: 768px) {
             h1 {
                 font-size: 2.5rem;
@@ -163,9 +245,28 @@
             <div class="terminal-line"><span class="prompt">$</span> cat /etc/interests</div>
             <div class="terminal-line">infrastructure | compliance | AI | security</div>
             <div class="terminal-line"><span class="prompt">$</span> <span class="cursor"></span></div>
+            
+            <a href="dance-mode.html" class="easter-egg" title="???">
+                <div class="mini-robot-head">
+                    <div class="mini-antenna">
+                        <div class="mini-antenna-ball"></div>
+                    </div>
+                    <div class="mini-eye left"></div>
+                    <div class="mini-eye right"></div>
+                    <div class="mini-mouth"></div>
+                </div>
+            </a>
         </div>
 
         <div class="status">[ MORE INFO COMING SOON ]</div>
+
+        <!-- Uncomment and customize these links when ready
+        <div class="links">
+            <a href="#" class="link">github</a>
+            <a href="#" class="link">twitter</a>
+            <a href="#" class="link">linkedin</a>
+        </div>
+        -->
 
         <!-- Uncomment and customize these links when ready
         <div class="links">
