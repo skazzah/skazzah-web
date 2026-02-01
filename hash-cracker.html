@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HASH CRACKER</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0a0a0a;
+            color: #ff0088;
+            padding: 20px;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 3rem;
+            font-weight: normal;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px #ff0088;
+            animation: flicker 3s infinite alternate;
+        }
+
+        .subtitle {
+            text-align: center;
+            opacity: 0.7;
+            margin-bottom: 20px;
+            font-size: 1rem;
+            color: #00ffff;
+        }
+
+        .warning {
+            text-align: center;
+            color: #ffaa00;
+            margin-bottom: 30px;
+            font-size: 0.85rem;
+            padding: 15px;
+            background: rgba(255, 170, 0, 0.1);
+            border: 1px solid #ffaa00;
+            border-radius: 4px;
+            animation: pulse 2s infinite;
+        }
+
+        .panel {
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid #ff0088;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 20px rgba(255, 0, 136, 0.3);
+        }
+
+        .panel-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: #00ffff;
+            text-transform: uppercase;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #00ffff;
+            font-size: 0.9rem;
+        }
+
+        input[type="text"], select {
+            width: 100%;
+            background: #000;
+            color: #ff0088;
+            border: 1px solid #ff0088;
+            border-radius: 4px;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+
+        input[type="text"]:focus, select:focus {
+            outline: none;
+            box-shadow: 0 0 10px rgba(255, 0, 136, 0.5);
+        }
+
+        select {
+            cursor: pointer;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background: transparent;
+            color: #ff0088;
+            border: 2px solid #ff0088;
+            padding: 12px 30px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            font-weight: normal;
+        }
+
+        button:hover {
+            background: #ff0088;
+            color: #0a0a0a;
+            box-shadow: 0 0 20px rgba(255, 0, 136, 0.5);
+            transform: translateY(-2px);
+        }
+
+        button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        button.crack-btn {
+            flex: 1;
+            min-width: 200px;
+            font-size: 18px;
+        }
+
+        button.stop-btn {
+            border-color: #ffaa00;
+            color: #ffaa00;
+        }
+
+        button.stop-btn:hover {
+            background: #ffaa00;
+            color: #0a0a0a;
+        }
+
+        .progress-container {
+            margin-top: 20px;
+            background: #000;
+            border: 1px solid #ff0088;
+            border-radius: 4px;
+            padding: 20px;
+        }
+
+        .progress-bar-bg {
+            width: 100%;
+            height: 30px;
+            background: rgba(255, 0, 136, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ff0088, #ff00ff);
+            width: 0%;
+            transition: width 0.3s;
+            box-shadow: 0 0 10px rgba(255, 0, 136, 0.5);
+        }
+
+        .progress-text {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .stat {
+            background: rgba(255, 0, 136, 0.1);
+            padding: 15px;
+            border-radius: 4px;
+            border: 1px solid rgba(255, 0, 136, 0.3);
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.7;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #00ffff;
+        }
+
+        .status-feed {
+            background: #000;
+            border: 1px solid #ff0088;
+            border-radius: 4px;
+            padding: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+
+        .status-line {
+            margin: 5px 0;
+            animation: fadeIn 0.3s;
+            font-size: 13px;
+        }
+
+        .status-line.trying {
+            color: #666;
+        }
+
+        .status-line.found {
+            color: #00ff88;
+            font-weight: bold;
+            animation: flashGreen 0.5s;
+        }
+
+        .status-line.info {
+            color: #00ffff;
+        }
+
+        .result-panel {
+            background: #000;
+            border: 2px solid #00ff88;
+            border-radius: 8px;
+            padding: 25px;
+            margin-top: 20px;
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.5);
+            animation: victoryPulse 1s infinite;
+        }
+
+        .result-panel .title {
+            color: #00ff88;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .result-content {
+            background: rgba(0, 255, 136, 0.1);
+            padding: 20px;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 1.2rem;
+            color: #00ff88;
+            word-wrap: break-word;
+        }
+
+        .crack-time {
+            text-align: center;
+            margin-top: 10px;
+            color: #00ffff;
+            font-size: 0.9rem;
+        }
+
+        .examples {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .example-btn {
+            font-size: 12px;
+            padding: 8px 15px;
+        }
+
+        .scanner-lines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            display: none;
+        }
+
+        .scanner-line {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #ff0088, transparent);
+            animation: scanDown 3s infinite;
+        }
+
+        .scanner-line:nth-child(2) {
+            animation-delay: 1s;
+        }
+
+        .scanner-line:nth-child(3) {
+            animation-delay: 2s;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 3rem;
+            color: #ff0088;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border: 1px solid #ff0088;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            background: #ff0088;
+            color: #0a0a0a;
+            box-shadow: 0 0 20px #ff0088;
+        }
+
+        .back-link-container {
+            text-align: center;
+            margin-top: 3rem;
+            padding-bottom: 2rem;
+        }
+
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes flashGreen {
+            0%, 100% { background: transparent; }
+            50% { background: rgba(0, 255, 136, 0.2); }
+        }
+
+        @keyframes victoryPulse {
+            0%, 100% { box-shadow: 0 0 30px rgba(0, 255, 136, 0.5); }
+            50% { box-shadow: 0 0 50px rgba(0, 255, 136, 0.8); }
+        }
+
+        @keyframes scanDown {
+            0% { top: 0; }
+            100% { top: 100%; }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="scanner-lines" id="scannerLines">
+        <div class="scanner-line"></div>
+        <div class="scanner-line"></div>
+        <div class="scanner-line"></div>
+    </div>
+
+    <div class="container">
+        <h1>[ HASH CRACKER ]</h1>
+        <div class="subtitle">// Educational Tool - See How Attackers Crack Hashes</div>
+        <div class="warning">
+            WARNING: For educational purposes only. Only crack hashes you own or have permission to test.
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">[ HASH INPUT ]</div>
+            
+            <div class="input-group">
+                <label>Hash Algorithm:</label>
+                <select id="hashType">
+                    <option value="SHA-256">SHA-256</option>
+                    <option value="SHA-1">SHA-1</option>
+                    <option value="MD5">MD5</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>Hash to Crack:</label>
+                <input type="text" id="hashInput" placeholder="Enter hash here..." value="5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8">
+            </div>
+
+            <div class="input-group">
+                <label>Attack Method:</label>
+                <select id="attackMethod">
+                    <option value="tryall">Try All (Recommended - Smart Variations)</option>
+                    <option value="maxeffort">Maximum Effort (Everything - Very Slow)</option>
+                    <option value="dictionary">Dictionary Attack (Fast)</option>
+                    <option value="common">Common Passwords (Medium)</option>
+                    <option value="numeric">Numeric Brute Force (Slow)</option>
+                    <option value="alpha">Alphabetic Brute Force (Very Slow)</option>
+                </select>
+            </div>
+
+            <div class="controls">
+                <button class="crack-btn" id="crackBtn" onclick="startCracking()">START CRACKING</button>
+                <button class="stop-btn" id="stopBtn" onclick="stopCracking()" disabled>STOP</button>
+            </div>
+
+            <div class="examples">
+                <div class="panel-title" style="width: 100%; margin: 15px 0 5px 0; font-size: 1rem;">Quick Examples:</div>
+                <button class="example-btn" onclick="loadExample('password')">password</button>
+                <button class="example-btn" onclick="loadExample('password321')">password321</button>
+                <button class="example-btn" onclick="loadExample('helloworld')">helloworld</button>
+                <button class="example-btn" onclick="loadExample('123456')">123456</button>
+                <button class="example-btn" onclick="loadExample('qwerty')">qwerty</button>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">[ CREATE YOUR OWN HASH ]</div>
+            
+            <div class="input-group">
+                <label>Hash Algorithm:</label>
+                <select id="customHashType">
+                    <option value="SHA-256">SHA-256</option>
+                    <option value="SHA-1">SHA-1</option>
+                    <option value="MD5">MD5</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>Enter a Password to Hash:</label>
+                <input type="text" id="customPassword" placeholder="Enter a password to hash...">
+            </div>
+
+            <div style="margin: 15px 0; padding: 15px; background: rgba(255, 170, 0, 0.1); border-left: 4px solid #ffaa00; border-radius: 4px; font-size: 13px;">
+                <strong>IMPORTANT:</strong> Never enter real passwords. This tool runs entirely in your browser and is not stored or shared, however it's safest to use test passwords.
+            </div>
+
+            <button onclick="generateHash()" style="background: transparent; color: #ff0088; border: 2px solid #ff0088; padding: 12px 30px; border-radius: 4px; cursor: pointer; font-family: 'Courier New', monospace; font-size: 16px; transition: all 0.3s; text-transform: uppercase; font-weight: normal; width: 100%;" onmouseover="this.style.background='#ff0088'; this.style.color='#0a0a0a'; this.style.boxShadow='0 0 20px rgba(255, 0, 136, 0.5)'; this.style.transform='translateY(-2px)';" onmouseout="this.style.background='transparent'; this.style.color='#ff0088'; this.style.boxShadow='none'; this.style.transform='translateY(0)';">
+                GENERATE HASH
+            </button>
+
+            <div id="generatedHash" style="margin-top: 15px; display: none;">
+                <label style="display: block; margin-bottom: 8px; color: #00ffff; font-size: 0.9rem;">Generated Hash:</label>
+                <input type="text" id="generatedHashValue" readonly style="width: 100%; background: #000; color: #00ff88; border: 1px solid #00ff88; border-radius: 4px; padding: 12px; font-family: 'Courier New', monospace; font-size: 14px;">
+                <button onclick="useGeneratedHash()" style="background: transparent; color: #ff0088; border: 2px solid #ff0088; padding: 8px 20px; border-radius: 4px; cursor: pointer; font-family: 'Courier New', monospace; font-size: 14px; transition: all 0.3s; text-transform: uppercase; font-weight: normal; margin-top: 10px; width: 100%;" onmouseover="this.style.background='#ff0088'; this.style.color='#0a0a0a'; this.style.boxShadow='0 0 20px rgba(255, 0, 136, 0.5)'; this.style.transform='translateY(-2px)';" onmouseout="this.style.background='transparent'; this.style.color='#ff0088'; this.style.boxShadow='none'; this.style.transform='translateY(0)';">
+                    USE THIS HASH ABOVE
+                </button>
+            </div>
+        </div>
+
+        <div class="panel" id="progressPanel" style="display: none;">
+            <div class="panel-title">[ CRACKING PROGRESS ]</div>
+            
+            <div class="progress-container">
+                <div class="progress-bar-bg">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+                <div class="progress-text" id="progressText">0%</div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat">
+                    <div class="stat-label">Attempts</div>
+                    <div class="stat-value" id="attempts">0</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Speed</div>
+                    <div class="stat-value" id="speed">0/s</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Time Elapsed</div>
+                    <div class="stat-value" id="timeElapsed">0s</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Current Try</div>
+                    <div class="stat-value" id="currentTry">-</div>
+                </div>
+            </div>
+
+            <div class="status-feed" id="statusFeed"></div>
+        </div>
+
+        <div id="resultPanel" style="display: none;"></div>
+
+        <div class="back-link-container">
+            <a href="index.html" class="back-link">← back to main</a>
+        </div>
+    </div>
+
+    <script>
+        let isCracking = false;
+        let attempts = 0;
+        let startTime = 0;
+        let crackingInterval = null;
+
+        const examples = {
+            'password': {
+                'SHA-256': '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8',
+                'SHA-1': '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8'
+            },
+            '123456': {
+                'SHA-256': '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92',
+                'SHA-1': '7c4a8d09ca3762af61e59520943dc26494f8941b'
+            },
+            'qwerty': {
+                'SHA-256': '65e84be33532fb784c48129675f9eff3a682b27168c0ea744b2cf58ee02337c5',
+                'SHA-1': 'b1b3773a05c0ed0176787a4f1574ff0075f7521e'
+            },
+            'secret': {
+                'SHA-256': '2bb80d537b1da3e38bd30361aa855686bde0eacd7162fef6a25fe97bf527a25b',
+                'SHA-1': 'e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4'
+            },
+            'password321': {
+                'SHA-256': 'a20aff106fe011d5dd696e3b7105200ff74331eeb8e865bb80ebd82b12665a07',
+                'SHA-1': '9f24eb5fea9dd0e4c4d431de86d07be869613d22'
+            },
+            'helloworld': {
+                'SHA-256': '936a185caaa266bb9cbe981e9e05cb78cd732b0b3280eb944412bb6f8f8f07af',
+                'SHA-1': '6adfb183a4a2c94a2f92dab5ade762a47889a5a1'
+            }
+        };
+
+        const commonPasswords = [
+            'password', '123456', '12345678', 'qwerty', 'abc123', 'monkey', '1234567', 
+            'letmein', 'trustno1', 'dragon', 'baseball', 'iloveyou', 'master', 'sunshine',
+            'ashley', 'bailey', 'passw0rd', 'shadow', '123123', '654321', 'superman',
+            'qazwsx', 'michael', 'football', 'welcome', 'jesus', 'ninja', 'mustang',
+            'password1', 'admin', 'root', 'user', 'test', 'guest', 'hello', 'secret',
+            'love', 'god', 'money', 'freedom', 'whatever', 'prince', 'jordan', 'summer',
+            'winter', 'spring', 'autumn', 'computer', 'internet', 'security', 'access',
+            'change', 'default', 'temp', 'temporary', 'demo', 'sample', 'example',
+            'password123', 'admin123', 'root123', '12345', '1234', '123', 'pass', 'pass123',
+            'letmein123', 'welcome123', 'qwerty123', 'abc123456', 'password1234'
+        ];
+
+        const dictionary = [
+            'the', 'be', 'to', 'of', 'and', 'a', 'in', 'that', 'have', 'i', 'it', 'for',
+            'not', 'on', 'with', 'he', 'as', 'you', 'do', 'at', 'this', 'but', 'his',
+            'by', 'from', 'they', 'we', 'say', 'her', 'she', 'or', 'an', 'will', 'my',
+            'one', 'all', 'would', 'there', 'their', 'what', 'so', 'up', 'out', 'if',
+            'about', 'who', 'get', 'which', 'go', 'me', 'when', 'make', 'can', 'like',
+            'time', 'no', 'just', 'him', 'know', 'take', 'people', 'into', 'year', 'your',
+            'good', 'some', 'could', 'them', 'see', 'other', 'than', 'then', 'now', 'look',
+            'only', 'come', 'its', 'over', 'think', 'also', 'back', 'after', 'use', 'two',
+            'how', 'our', 'work', 'first', 'well', 'way', 'even', 'new', 'want', 'because',
+            'any', 'these', 'give', 'day', 'most', 'us', 'hello', 'world', 'test', 'admin',
+            'password', 'user', 'login', 'account', 'system', 'data', 'info', 'main',
+            'home', 'page', 'site', 'web', 'email', 'name', 'code', 'key', 'value'
+        ];
+
+        function generateVariations(word) {
+            const variations = new Set();
+            variations.add(word);
+            variations.add(word.toLowerCase());
+            variations.add(word.toUpperCase());
+            variations.add(word.charAt(0).toUpperCase() + word.slice(1).toLowerCase());
+            
+            for (let i = 1; i <= 9999; i++) {
+                variations.add(word + i);
+                variations.add(word.toLowerCase() + i);
+                variations.add(word.charAt(0).toUpperCase() + word.slice(1).toLowerCase() + i);
+            }
+            
+            const commonNumbers = ['123', '1234', '12345', '123456', '321', '111', '000', '69', '420', '2024', '2025'];
+            commonNumbers.forEach(num => {
+                variations.add(word + num);
+                variations.add(num + word);
+                variations.add(word.toLowerCase() + num);
+                variations.add(word.toUpperCase() + num);
+            });
+            
+            const specialChars = ['!', '@', '#', '$', '!@', '!!', '123!', '!123'];
+            specialChars.forEach(char => {
+                variations.add(word + char);
+                variations.add(word.toLowerCase() + char);
+            });
+            
+            const leet = word
+                .replace(/a/gi, '4')
+                .replace(/e/gi, '3')
+                .replace(/i/gi, '1')
+                .replace(/o/gi, '0')
+                .replace(/s/gi, '5')
+                .replace(/t/gi, '7');
+            variations.add(leet);
+            variations.add(leet + '123');
+            
+            const prefixes = ['my', 'the', 'i'];
+            prefixes.forEach(prefix => {
+                variations.add(prefix + word);
+                variations.add(prefix + word.toLowerCase());
+            });
+            
+            return Array.from(variations);
+        }
+
+        function generateWordCombinations() {
+            const combinations = new Set();
+            
+            const commonPairs = [
+                ['hello', 'world'], ['hello', 'there'], ['good', 'morning'], ['good', 'night'],
+                ['thank', 'you'], ['love', 'you'], ['pass', 'word'], ['user', 'name'],
+                ['admin', 'user'], ['super', 'user'], ['root', 'admin'], ['my', 'password'],
+                ['the', 'password'], ['this', 'is'], ['let', 'me'], ['open', 'sesame']
+            ];
+            
+            commonPairs.forEach(([word1, word2]) => {
+                combinations.add(word1 + word2);
+                combinations.add(word1 + word2.charAt(0).toUpperCase() + word2.slice(1));
+                combinations.add(word1.charAt(0).toUpperCase() + word1.slice(1) + word2);
+                combinations.add(word1.charAt(0).toUpperCase() + word1.slice(1) + word2.charAt(0).toUpperCase() + word2.slice(1));
+            });
+            
+            const topWords = ['password', 'admin', 'user', 'test', 'hello', 'world', 'welcome', 'secret', 'this', 'is', 'a', 'my', 'the', 'login', 'access'];
+            
+            for (let i = 0; i < topWords.length && i < 15; i++) {
+                for (let j = 0; j < topWords.length && j < 15; j++) {
+                    if (i !== j) {
+                        const combo = topWords[i] + topWords[j];
+                        combinations.add(combo);
+                        combinations.add(topWords[i] + topWords[j].charAt(0).toUpperCase() + topWords[j].slice(1));
+                    }
+                }
+            }
+            
+            const threeWordPhrases = [
+                ['this', 'is', 'password'], ['this', 'is', 'a'], ['let', 'me', 'in'],
+                ['open', 'the', 'door'], ['i', 'love', 'you'], ['my', 'super', 'password'],
+                ['the', 'best', 'password']
+            ];
+            
+            threeWordPhrases.forEach(words => {
+                combinations.add(words.join(''));
+                combinations.add(words.map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(''));
+            });
+            
+            return Array.from(combinations);
+        }
+
+        function loadExample(password) {
+            const hashType = document.getElementById('hashType').value;
+            const hash = examples[password][hashType];
+            document.getElementById('hashInput').value = hash;
+        }
+
+        async function generateHash() {
+            const password = document.getElementById('customPassword').value.trim();
+            
+            if (!password) {
+                alert('Please enter a password to hash!');
+                return;
+            }
+
+            const hashType = document.getElementById('customHashType').value;
+            const hash = await hashString(password, hashType);
+            
+            if (hash) {
+                document.getElementById('generatedHashValue').value = hash;
+                document.getElementById('generatedHash').style.display = 'block';
+                
+                document.getElementById('hashType').value = hashType;
+            } else {
+                alert('Error generating hash. MD5 is not supported in browser.');
+            }
+        }
+
+        function useGeneratedHash() {
+            const generatedHash = document.getElementById('generatedHashValue').value;
+            document.getElementById('hashInput').value = generatedHash;
+            
+            document.getElementById('hashInput').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            const hashInput = document.getElementById('hashInput');
+            hashInput.style.border = '2px solid #00ff88';
+            setTimeout(() => {
+                hashInput.style.border = '1px solid #ff0088';
+            }, 1000);
+        }
+
+        async function hashString(str, algorithm) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(str);
+            
+            let hashAlgo;
+            switch(algorithm) {
+                case 'SHA-256':
+                    hashAlgo = 'SHA-256';
+                    break;
+                case 'SHA-1':
+                    hashAlgo = 'SHA-1';
+                    break;
+                case 'MD5':
+                    return null;
+                default:
+                    hashAlgo = 'SHA-256';
+            }
+            
+            const hashBuffer = await crypto.subtle.digest(hashAlgo, data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            return hashHex;
+        }
+
+        function addStatus(message, type = 'info') {
+            const feed = document.getElementById('statusFeed');
+            const line = document.createElement('div');
+            line.className = `status-line ${type}`;
+            line.textContent = `> ${message}`;
+            feed.appendChild(line);
+            feed.scrollTop = feed.scrollHeight;
+        }
+
+        function updateStats(current) {
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            const speed = elapsed > 0 ? Math.floor(attempts / elapsed) : 0;
+            
+            document.getElementById('attempts').textContent = attempts.toLocaleString();
+            document.getElementById('speed').textContent = speed + '/s';
+            document.getElementById('timeElapsed').textContent = elapsed + 's';
+            document.getElementById('currentTry').textContent = current.substring(0, 20);
+        }
+
+        function showResult(password, timeTaken) {
+            document.getElementById('scannerLines').style.display = 'none';
+            
+            const panel = document.getElementById('resultPanel');
+            panel.style.display = 'block';
+            panel.innerHTML = `
+                <div class="result-panel">
+                    <div class="title">HASH CRACKED!</div>
+                    <div class="result-content">
+                        Password: <strong>${password}</strong>
+                    </div>
+                    <div class="crack-time">
+                        Cracked in ${timeTaken}s after ${attempts.toLocaleString()} attempts
+                    </div>
+                </div>
+            `;
+        }
+
+        async function tryPassword(password, targetHash, algorithm) {
+            attempts++;
+            const hash = await hashString(password, algorithm);
+            
+            if (attempts % 10 === 0) {
+                updateStats(password);
+            }
+            
+            if (attempts % 100 === 0) {
+                addStatus(`Trying: ${password}`, 'trying');
+            }
+            
+            if (hash === targetHash.toLowerCase()) {
+                return true;
+            }
+            return false;
+        }
+
+        async function tryAllAttack(targetHash, algorithm) {
+            addStatus('Starting comprehensive "Try All" attack...', 'info');
+            
+            const wordCombos = generateWordCombinations();
+            for (let i = 0; i < wordCombos.length && isCracking; i++) {
+                const combo = wordCombos[i];
+                if (await tryPassword(combo, targetHash, algorithm)) return combo;
+                
+                const quickVariations = [combo + '123', combo + '!', combo + '1', combo + '2024', combo + '@'];
+                for (let variation of quickVariations) {
+                    if (!isCracking) break;
+                    if (await tryPassword(variation, targetHash, algorithm)) return variation;
+                }
+                if (i % 50 === 0) await new Promise(resolve => setTimeout(resolve, 0));
+            }
+            
+            const baseWords = [...new Set([...commonPasswords, ...dictionary])];
+            for (let i = 0; i < baseWords.length && isCracking; i++) {
+                const variations = generateVariations(baseWords[i]);
+                for (let j = 0; j < variations.length && isCracking; j++) {
+                    if (await tryPassword(variations[j], targetHash, algorithm)) return variations[j];
+                    if (j % 50 === 0) await new Promise(resolve => setTimeout(resolve, 0));
+                }
+            }
+            
+            return null;
+        }
+
+        async function dictionaryAttack(targetHash, algorithm) {
+            const wordList = [...dictionary, ...commonPasswords];
+            for (let i = 0; i < wordList.length && isCracking; i++) {
+                const word = wordList[i];
+                if (await tryPassword(word, targetHash, algorithm)) return word;
+                if (i % 3 === 0) await new Promise(resolve => setTimeout(resolve, 0));
+            }
+            return null;
+        }
+
+        async function commonPasswordsAttack(targetHash, algorithm) {
+            for (let i = 0; i < commonPasswords.length && isCracking; i++) {
+                if (await tryPassword(commonPasswords[i], targetHash, algorithm)) return commonPasswords[i];
+                if (i % 5 === 0) await new Promise(resolve => setTimeout(resolve, 0));
+            }
+            return null;
+        }
+
+        async function numericBruteForce(targetHash, algorithm, maxLength = 8) {
+            const max = Math.pow(10, maxLength);
+            for (let i = 0; i < max && isCracking; i++) {
+                if (await tryPassword(i.toString().padStart(maxLength, '0'), targetHash, algorithm)) return i.toString();
+                if (i % 100 === 0) await new Promise(resolve => setTimeout(resolve, 0));
+            }
+            return null;
+        }
+
+        async function alphaBruteForce(targetHash, algorithm, maxLength = 4) {
+            const chars = 'abcdefghijklmnopqrstuvwxyz';
+            async function* generateCombinations(length) {
+                if (length === 1) {
+                    for (let char of chars) yield char;
+                } else {
+                    for await (let combo of generateCombinations(length - 1)) {
+                        for (let char of chars) yield combo + char;
+                    }
+                }
+            }
+            
+            for (let len = 1; len <= maxLength && isCracking; len++) {
+                for await (let password of generateCombinations(len)) {
+                    if (!isCracking) break;
+                    if (await tryPassword(password, targetHash, algorithm)) return password;
+                }
+            }
+            return null;
+        }
+
+        async function startCracking() {
+            const hashInput = document.getElementById('hashInput').value.trim();
+            const hashType = document.getElementById('hashType').value;
+            const attackMethod = document.getElementById('attackMethod').value;
+            
+            if (!hashInput) {
+                alert('Please enter a hash to crack!');
+                return;
+            }
+            
+            if (hashType === 'MD5') {
+                alert('MD5 is not supported in browser crypto API. Please use SHA-256 or SHA-1.');
+                return;
+            }
+            
+            isCracking = true;
+            attempts = 0;
+            startTime = Date.now();
+            document.getElementById('statusFeed').innerHTML = '';
+            document.getElementById('resultPanel').style.display = 'none';
+            document.getElementById('progressPanel').style.display = 'block';
+            document.getElementById('progressBar').style.width = '0%';
+            document.getElementById('crackBtn').disabled = true;
+            document.getElementById('stopBtn').disabled = false;
+            document.getElementById('scannerLines').style.display = 'block';
+            
+            addStatus(`Target hash: ${hashInput}`, 'info');
+            addStatus(`Algorithm: ${hashType}`, 'info');
+            addStatus(`Attack method: ${attackMethod}`, 'info');
+            
+            let result = null;
+            
+            try {
+                switch(attackMethod) {
+                    case 'tryall':
+                        result = await tryAllAttack(hashInput, hashType);
+                        break;
+                    case 'dictionary':
+                        result = await dictionaryAttack(hashInput, hashType);
+                        break;
+                    case 'common':
+                        result = await commonPasswordsAttack(hashInput, hashType);
+                        break;
+                    case 'numeric':
+                        result = await numericBruteForce(hashInput, hashType, 6);
+                        break;
+                    case 'alpha':
+                        result = await alphaBruteForce(hashInput, hashType, 4);
+                        break;
+                }
+                
+                if (result) {
+                    addStatus(`HASH CRACKED! Password: ${result}`, 'found');
+                    const timeTaken = Math.floor((Date.now() - startTime) / 1000);
+                    showResult(result, timeTaken);
+                } else if (isCracking) {
+                    addStatus('Hash not cracked. Try a different attack method.', 'info');
+                }
+            } catch (error) {
+                console.error(error);
+                addStatus('Error during cracking: ' + error.message, 'info');
+            }
+            
+            stopCracking();
+        }
+
+        function stopCracking() {
+            isCracking = false;
+            document.getElementById('crackBtn').disabled = false;
+            document.getElementById('stopBtn').disabled = true;
+            document.getElementById('scannerLines').style.display = 'none';
+            if (attempts > 0) {
+                addStatus('Cracking stopped.', 'info');
+            }
+        }
+    </script>
+</body>
+</html>

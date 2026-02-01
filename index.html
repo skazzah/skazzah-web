@@ -214,9 +214,172 @@
             transform: translateX(-50%);
         }
 
+        .lock-icon {
+            position: absolute;
+            top: 30px;
+            left: -22px;
+            width: 28px;
+            height: 32px;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: all 0.4s ease;
+            z-index: 1;
+        }
+
+        .lock-icon:hover {
+            opacity: 1;
+            left: -8px;
+            transform: rotate(3deg);
+        }
+
+        .lock-body {
+            width: 20px;
+            height: 16px;
+            background: #00ff88;
+            border-radius: 3px;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+        }
+
+        .lock-shackle {
+            width: 14px;
+            height: 12px;
+            border: 3px solid #00ff88;
+            border-bottom: none;
+            border-radius: 7px 7px 0 0;
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .lock-keyhole {
+            width: 4px;
+            height: 6px;
+            background: #0a0e27;
+            border-radius: 2px 2px 0 0;
+            position: absolute;
+            top: 3px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .lock-keyhole::after {
+            content: '';
+            width: 2px;
+            height: 4px;
+            background: #0a0e27;
+            position: absolute;
+            top: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .key-icon {
+            position: absolute;
+            top: 30px;
+            right: -22px;
+            width: 28px;
+            height: 28px;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: all 0.4s ease;
+            z-index: 1;
+            transform: rotate(-45deg);
+        }
+
+        .key-icon:hover {
+            opacity: 1;
+            right: -8px;
+            transform: rotate(-35deg);
+        }
+
+        .key-head {
+            width: 11px;
+            height: 11px;
+            background: transparent;
+            border: 2.5px solid #00ff88;
+            border-radius: 50%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+        }
+
+        .key-head::before {
+            content: '';
+            width: 3px;
+            height: 3px;
+            background: #00ff88;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .key-shaft {
+            width: 2.5px;
+            height: 15px;
+            background: #00ff88;
+            position: absolute;
+            top: 9px;
+            left: 4px;
+        }
+
+        .key-teeth {
+            position: absolute;
+            bottom: -2px;
+            right: -2.5px;
+        }
+
+        .key-tooth {
+            width: 2.5px;
+            height: 3px;
+            background: #00ff88;
+            position: absolute;
+        }
+
+        .key-tooth:nth-child(1) {
+            bottom: 0;
+            right: 0;
+        }
+
+        .key-tooth:nth-child(2) {
+            bottom: 4px;
+            right: 0;
+            height: 3.5px;
+        }
+
+        .key-tooth:nth-child(3) {
+            bottom: 8px;
+            right: 0;
+        }
+
         @media (max-width: 768px) {
             .easter-egg {
                 bottom: 15px;
+                right: 15px;
+            }
+            
+            .lock-icon {
+                top: 15px;
+                left: 15px;
+            }
+
+            .lock-icon:hover {
+                left: 15px;
+            }
+
+            .key-icon {
+                top: 60px;
+                right: 15px;
+            }
+
+            .key-icon:hover {
                 right: 15px;
             }
         }
@@ -256,6 +419,24 @@
                     <div class="mini-mouth"></div>
                 </div>
             </a>
+
+            <a href="password-crack-simulator.html" class="lock-icon" title="security">
+                <div class="lock-shackle"></div>
+                <div class="lock-body">
+                    <div class="lock-keyhole"></div>
+                </div>
+            </a>
+
+            <a href="hash-cracker.html" class="key-icon" title="access">
+                <div class="key-head"></div>
+                <div class="key-shaft">
+                    <div class="key-teeth">
+                        <div class="key-tooth"></div>
+                        <div class="key-tooth"></div>
+                        <div class="key-tooth"></div>
+                    </div>
+                </div>
+            </a>
         </div>
 
         <div class="status">[ MORE INFO COMING SOON ]</div>
@@ -285,7 +466,7 @@
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
-        const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+        const chars = '011001010001011010010011010110001010111010100101011101010011100011100010111000101010';
         const fontSize = 14;
         const columns = canvas.width / fontSize;
         const drops = Array(Math.floor(columns)).fill(1);
